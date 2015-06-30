@@ -6,14 +6,19 @@ func spaceDelimiter(c uint8) bool {
 	return c == ' '
 }
 
+func isWhiteSpace(c uint8) bool {
+	return c == ' ' || c == '\t'
+}
+
 func Widthen(text string, width int, delimiters ...uint8) (splits []string) {
+	ch := map[uint8]bool{}
+	for _, delim := range delimiters {
+		ch[delim] = true
+	}
+
 	fn := func(c uint8) bool {
-		for _, delim := range delimiters {
-			if c == delim {
-				return true
-			}
-		}
-		return false
+		_, ok := ch[c]
+		return ok
 	}
 
 	return widthen(text, fn, width)
@@ -69,10 +74,13 @@ func widthen(text string, fn delimiter, width int) (splits []string) {
 				break
 			}
 
-			endIndex -= 1
+			if !isWhiteSpace(split[endIndex]) {
+				endIndex -= 1
+			} else {
+				endIndex -= 4
+			}
 		}
 
-		// sediments = append(sediments, split[:stop])
 		reversed := []string{}
 		for i := len(sediments) - 1; i >= 0; i-- {
 			reversed = append(reversed, sediments[i])
